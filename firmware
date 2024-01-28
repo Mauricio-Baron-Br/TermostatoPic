@@ -1,1 +1,58 @@
+//Conexao com modulo SPI via Software
+sbit SoftSpi_SDI at RA1_bit;
+sbit SoftSpi_SDO at RA2_bit;
+sbit SoftSpi_CLK at RA0_bit;
 
+sbit SoftSpi_SDI_Direction at TRISA1_bit;
+sbit SoftSpi_SDO_Direction at TRISA2_bit;
+sbit SoftSpi_CLK_Direction at TRISA0_bit;
+
+//Definição dos pinos CS - Chip Select
+#define EN_7SEG1 PORTB.F0
+#define EN_7SEG2 PORTB.F1
+
+//Prototipo de funçoes exetrenas
+extern unsigned short BCD_Data(unsigned short DATA );
+
+//Prototipo de funçoes
+void setup();
+
+
+void setup(){
+     CMCON = 0x07; // Desativa comparadores
+     
+     TRISB.F0 = 0; //Configura RB0 como saida
+     TRISB.F1 = 0; //Configura RB0 como saida
+     Soft_SPI_Init(); //Inicia Software SPI
+}
+void main(){
+     unsigned short temp,dig1,dig2;
+     
+     setup();
+     while(1){
+              //contador para teste
+              temp++;
+              if(temp > 99){
+              temp =0;
+              }
+     //separa digitos
+              dig2 = temp/10;
+              dig1  = temp%10;
+              
+              dig2 = BCD_Data(dig2);//converte para BCD
+              dig1 = BCD_Data(dig1);//converte para BCD
+              
+              //envia digito 1
+              EN_7SEG1 = 0;//ChipSelect do 74hc595 responsavel pelo BCD do digito 1
+              Soft_SPI_Write(dig1);  //envia dados via SPI
+              EN_7SEG1 = 1;
+              
+              //envia digito 2
+              EN_7SEG2 = 0;//ChipSelect do 74hc595 responsavel pelo BCD do digito 2
+              Soft_SPI_Write(dig2);  //envia dados via SPI
+              EN_7SEG2 = 1;
+              
+              delay_ms(500);
+     }
+
+}
