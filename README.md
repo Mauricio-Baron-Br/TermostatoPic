@@ -5,3 +5,4 @@ O projeto será dividido em 6 partes
 1 O esquemático, código preliminar com recurso de teste dos displays.
 2 Acréscimos do sensor DHT11 e atualização do firmware com acréscimo da biblioteca do sensor.
 #
+![Screenshot](esquema.bmp)
