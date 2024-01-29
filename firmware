@@ -13,6 +13,8 @@ sbit SoftSpi_CLK_Direction at TRISA0_bit;
 
 //Prototipo de funçoes exetrenas
 extern unsigned short BCD_Data(unsigned short DATA );
+extern int DHT11(unsigned short type);
+extern void DHT11_init();
 
 //Prototipo de funçoes
 void setup();
@@ -24,20 +26,25 @@ void setup(){
      TRISB.F0 = 0; //Configura RB0 como saida
      TRISB.F1 = 0; //Configura RB0 como saida
      Soft_SPI_Init(); //Inicia Software SPI
+     TRISB.F4 = 0; //Configura RB0 como saida
+     DHT11_init();    //Inicia DHT11
+     
 }
 void main(){
-     unsigned short temp,dig1,dig2;
+     unsigned short dig1,dig2;
+     int temp, hum;
      
      setup();
+
      while(1){
-              //contador para teste
-              temp++;
-              if(temp > 99){
-              temp =0;
-              }
+     //Temperatura passando o vaolr 1 retorna a umidade e passado o valor 2 reotrna a temaperatura
+              temp = DHT11(2);
+
      //separa digitos
+              temp = temp/100;
               dig2 = temp/10;
               dig1  = temp%10;
+
               
               dig2 = BCD_Data(dig2);//converte para BCD
               dig1 = BCD_Data(dig1);//converte para BCD
