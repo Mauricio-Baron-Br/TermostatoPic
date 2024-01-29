@@ -4,6 +4,7 @@ O controle preciso da temperatura desempenha um papel fundamental em diversos co
 O projeto será dividido em 6 partes, compilar os arquivos BCDDisp e frimware no mikroC PRO for PIC, para o pic 16f628a.
 
 1 O esquemático, código preliminar com recurso de teste dos displays.
+2 Acréscimo do sensor de temperatura, atuaização do firmware principal, acréscimo do biblioteca do DHT11.
 
 #
 ![Screenshot](esquema.bmp)
