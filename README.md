@@ -13,10 +13,18 @@ Lista de material:
 
 2 Display 7 Segmentos com o Catodo comum.
 
+2 Resistores de 10k.
+
+2 Push button.
+
+3 Capacitores ceramicos 100nF
+
 #
 1 O esquemático, código preliminar com recurso de teste dos displays.
 
 2 Acréscimo do sensor de temperatura, atuaização do firmware principal, acréscimo do biblioteca do DHT11.
+
+3 Acréscimo de 2 push button para setar a temperatura de disparo,  atuaização do firmware principal.
 
 #
 ![Screenshot](esquema.bmp)
