@@ -10,6 +10,15 @@ sbit SoftSpi_CLK_Direction at TRISA0_bit;
 //Definição dos pinos CS - Chip Select
 #define EN_7SEG1 PORTB.F0
 #define EN_7SEG2 PORTB.F1
+#define PB1 PORTB.F3
+#define PB2 PORTB.F4
+
+unsigned short FlagA;
+#define B1_Trig FlagA.F0
+#define B2_Trig FlagA.F1
+#define B1 FlagA.F2
+#define B2 FlagA.F3
+#define SET_EN FlagA.F4
 
 //Prototipo de funçoes exetrenas
 extern unsigned short BCD_Data(unsigned short DATA );
@@ -18,7 +27,20 @@ extern void DHT11_init();
 
 //Prototipo de funçoes
 void setup();
+void leBotoes();
 
+//Variaveis globais
+int IntCycleCounter01 = 0;
+unsigned short SetTemp = 0;
+
+//Função de interupção
+void interrupt(){
+     if(TMR2IF_bit){
+        TMR2IF_bit = 0x00;  //Reseta a interrupção
+        IntCycleCounter01++;   //contador para parametros internos
+        PORTB.F5 = !PORTB.F5;
+     }
+}
 
 void setup(){
      CMCON = 0x07; // Desativa comparadores
@@ -26,24 +48,86 @@ void setup(){
      TRISB.F0 = 0; //Configura RB0 como saida
      TRISB.F1 = 0; //Configura RB0 como saida
      Soft_SPI_Init(); //Inicia Software SPI
-     TRISB.F4 = 0; //Configura RB0 como saida
+     TRISB.F3 = 1; //Configura como entrada - botao 1
+     TRISB.F4 = 1; //Configura como entrada - botao 2
+     TRISB.F5 = 0; //teste de interrupção
+     
+     INTCON.GIE = 1; //Habilita interrupção global
+     INTCON.PEIE = 1; //Habilita interrupção dosperifericos
+     
+     //Configuração do timer 2
+     TMR2IE_bit = 0x01; //Habilita interrupção do timer 2
+     T2CON = 0b01111000; //Timer 2 inicialmente desligado, postscale 1:16
+     
      DHT11_init();    //Inicia DHT11
      
 }
 void main(){
-     unsigned short dig1,dig2;
-     int temp, hum;
+     unsigned short dig1,dig2,i;
+     int temp, hum, value;
      
      setup();
 
      while(1){
+     //efetua a leitura dos botoes
+     leBotoes();
+     if(B1 || B2 || SET_EN){
+           //Controle de exibição do SET
+           if(SET_EN == 0x00){
+             SET_EN = 0x01;
+             IntCycleCounter01 = 0x00;
+             TMR2ON_bit = 0x01;  //Liga o Timer 2
+           }
+           if(IntCycleCounter01 < 500){
+               SET_EN = 0x01;
+           }else{
+               SET_EN = 0x00;
+               TMR2ON_bit = 0x00;  //Desliga timer 2
+               
+               for(i=0;i<3;i++){ //pisca dispaly, sinalizando ofim do mono Set
+               //Liga todos ossegmentos
+                   EN_7SEG1 = 0; //ChipSelect do 74hc595 responsavel peloBCD do dig1
+                   EN_7SEG2 = 0; //ChipSelect do 74hc595 responsavel peloBCD do dig2
+                   Soft_SPI_Write(0); //Envia dados via SPI
+                   EN_7SEG1 = 1;
+                   EN_7SEG2 = 1;
+                   delay_ms(400);
+                   //Desliga todos ossegmentos
+                   EN_7SEG1 = 0; //ChipSelect do 74hc595 responsavel peloBCD do dig1
+                   EN_7SEG2 = 0; //ChipSelect do 74hc595 responsavel peloBCD do dig2
+                   Soft_SPI_Write(255); //Envia dados via SPI
+                   EN_7SEG1 = 1;
+                   EN_7SEG2 = 1;
+                   delay_ms(400);
+               }
+           }
+           if(B1){
+              IntCycleCounter01 = 0x00;
+              if(SetTemp < 1){
+                SetTemp = 1;
+               }else{
+                 Settemp++;
+               }
+           }
+           if(B2){
+              IntCycleCounter01 = 0x00;
+              if(SetTemp < 1){
+                SetTemp = 1;
+               }else{
+                 Settemp--;
+               }
+           }
+           value = SetTemp * 100;
+     }else{
      //Temperatura passando o vaolr 1 retorna a umidade e passado o valor 2 reotrna a temaperatura
               temp = DHT11(2);
+              value = temp;
+     }
 
      //separa digitos
-              temp = temp/100;
-              dig2 = temp/10;
-              dig1  = temp%10;
+              value = value/100;
+              dig2 = value/10;
+              dig1  = value%10;
 
               
               dig2 = BCD_Data(dig2);//converte para BCD
@@ -60,6 +144,24 @@ void main(){
               EN_7SEG2 = 1;
               
               delay_ms(500);
+              //Reseta estado internodos botoes
+              B1 = 0x00;
+              B2 = 0x00;
      }
-
+}
+void leBotoes(){
+     if(PB1){
+        B1_Trig = 0x01;
+     }
+     if(!PB1 && B1_Trig){
+        B1 = 0x01;
+        B1_Trig = 0x00;
+     }
+     if(PB2){
+      B2_Trig = 0x01;
+     }
+     if(!PB2 && B2_Trig){
+        B2 = 0x01;
+        B2_Trig = 0x00;
+     }
 }
