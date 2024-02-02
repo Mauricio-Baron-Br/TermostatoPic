@@ -12,6 +12,7 @@ sbit SoftSpi_CLK_Direction at TRISA0_bit;
 #define EN_7SEG2 PORTB.F1
 #define PB1 PORTB.F3
 #define PB2 PORTB.F4
+#define OUT PORTB.F5
 
 unsigned short FlagA;
 #define B1_Trig FlagA.F0
@@ -19,6 +20,7 @@ unsigned short FlagA;
 #define B1 FlagA.F2
 #define B2 FlagA.F3
 #define SET_EN FlagA.F4
+#define ADJ_MODE FlagA.F5
 
 //Prototipo de funçoes exetrenas
 extern unsigned short BCD_Data(unsigned short DATA );
@@ -28,6 +30,7 @@ extern void DHT11_init();
 //Prototipo de funçoes
 void setup();
 void leBotoes();
+void regulaTemp(int Set,int Temp, unsigned short type);
 
 //Variaveis globais
 int IntCycleCounter01 = 0;
@@ -122,6 +125,9 @@ void main(){
      //Temperatura passando o vaolr 1 retorna a umidade e passado o valor 2 reotrna a temaperatura
               temp = DHT11(2);
               value = temp;
+     //No momento esta setado para esquentar
+              ADJ_MODE = 0b0;
+              regulaTemp(SetTemp*100, temp, ADJ_MODE);
      }
 
      //separa digitos
@@ -163,5 +169,22 @@ void leBotoes(){
      if(!PB2 && B2_Trig){
         B2 = 0x01;
         B2_Trig = 0x00;
+     }
+}
+void regulaTemp(int Set,int Temp, unsigned short type){
+
+     if(!type){
+     //esquenta
+       if(TEMP < SET){
+        OUT = 0x1;
+       }else{
+        OUT = 0x0;
+       }
+     //esfria
+       if(TEMP > SET){
+        OUT = 0x1;
+       }else{
+        OUT = 0x0;
+       }
      }
 }
