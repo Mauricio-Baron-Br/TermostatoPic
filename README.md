@@ -17,14 +17,22 @@ Lista de material:
 
 2 Push button.
 
-3 Capacitores ceramicos 100nF
+4 Capacitores ceramicos 100nF.
+
+1 Diodo 1N4007.
+
+1 Trasistor BC548.
+
+1 Rele bobina 5V.
 
 #
 1 O esquemático, código preliminar com recurso de teste dos displays.
 
 2 Acréscimo do sensor de temperatura, atuaização do firmware principal, acréscimo do biblioteca do DHT11.
 
-3 Acréscimo de 2 push button para setar a temperatura de disparo,  atuaização do firmware principal.
+3 Acréscimo de 2 push button para setar a temperatura de disparo, atuaização do firmware principal leitura dos botões.
+
+4 Acréscimo do estagio de potencia do acionador da saida para resistência atuaização do firmware principal rotina de acionamento do rele de saida.
 
 #
 ![Screenshot](esquema.bmp)
