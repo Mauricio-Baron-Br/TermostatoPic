@@ -17,13 +17,21 @@ Lista de material:
 
 2 Push button.
 
-4 Capacitores ceramicos 100nF.
+6 Capacitores ceramicos 100nF.
 
 1 Diodo 1N4007.
 
 1 Trasistor BC548.
 
 1 Rele bobina 5V.
+
+2 Capacitores de 100uf 12v.
+
+1 Regulador LM7805 TO-220
+
+1 Resistor de 330R.
+
+1 LED vermelho 5mm.
 
 #
 1 O esquemático, código preliminar com recurso de teste dos displays.
@@ -32,7 +40,9 @@ Lista de material:
 
 3 Acréscimo de 2 push button para setar a temperatura de disparo, atuaização do firmware principal leitura dos botões.
 
-4 Acréscimo do estagio de potencia do acionador da saida para resistência atuaização do firmware principal rotina de acionamento do rele de saida.
+4 Acréscimo do circuito de potencia do acionador da saida para resistência atuaização do firmware principal rotina de acionamento do rele de saida.
+
+5 Acréscimo do circuito de alimentação.
 
 #
 ![Screenshot](esquema.bmp)
